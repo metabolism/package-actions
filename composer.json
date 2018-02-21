@@ -1,0 +1,33 @@
+{
+  "name": "metabolism/package-actions",
+  "version": "1.0.0",
+  "description": "Allow file and folder actions uppon package installation or update",
+  "type": "composer-plugin",
+  "license": "AGPL-3.0",
+  "authors": [
+    {
+      "name": "Jérôme BARBATO",
+      "email": "jerome@metabolism.fr"
+    },
+    {
+      "name": "Paul COUDEVILLE",
+      "email": "paul@metabolism.fr"
+    }
+  ],
+  "require": {
+    "composer-plugin-api": "^1.0",
+    "composer/installers": "~1.0",
+    "symfony/filesystem": "~3.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Metabolism\\PackageAction\\": "src/"
+    }
+  },
+  "extra": {
+    "class": "Metabolism\\PackageAction\\Composer\\InstallerPlugin",
+    "branch-alias": {
+      "dev-1.0.x": "1.0.x-dev"
+    }
+  }
+}
