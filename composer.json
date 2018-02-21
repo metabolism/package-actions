@@ -21,11 +21,11 @@
   },
   "autoload": {
     "psr-4": {
-      "Metabolism\\PackageAction\\": "src/"
+      "Metabolism\\PackageActions\\": "src/"
     }
   },
   "extra": {
-    "class": "Metabolism\\PackageAction\\Composer\\InstallerPlugin",
+    "class": "Metabolism\\PackageActions\\Composer\\InstallerPlugin",
     "branch-alias": {
       "dev-1.0.x": "1.0.x-dev"
     }

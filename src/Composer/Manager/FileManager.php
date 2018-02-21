@@ -1,6 +1,6 @@
 <?php
 
-namespace Metabolism\PackgeActions\Composer\Manager;
+namespace Metabolism\PackageActions\Composer\Manager;
 
 use Composer\IO\IOInterface;
 use Composer\Package\Package;

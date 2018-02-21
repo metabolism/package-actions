@@ -3,7 +3,7 @@
  * User: Paul Coudeville <paul@metabolism.fr>
  */
 
-namespace Metabolism\PackgeActions\Composer;
+namespace Metabolism\PackageActions\Composer;
 
 use Composer\Composer,
 	Composer\EventDispatcher\EventSubscriberInterface,
