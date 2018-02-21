@@ -13,7 +13,7 @@ use Composer\Composer,
 	Composer\Installer\PackageEvent,
 	Composer\Script\ScriptEvents;
 
-use Metabolism\PackgeActions\Composer\Manager\FileManager;
+use Metabolism\PackageActions\Composer\Manager\FileManager;
 
 /**
  * Class Plugin
