@@ -40,7 +40,7 @@ class FileManager
      */
     public function copy($files, $package, $io)
     {
-	    $fileSystem         = new FileSystem();
+	    $fileSystem = new FileSystem();
         $packageDir = 'vendor' . DIRECTORY_SEPARATOR . $package->getName();
 
         foreach ( $files as $source => $destination )
@@ -58,49 +58,47 @@ class FileManager
             $source = $packageDir . DIRECTORY_SEPARATOR . $source;
             $destination   = getcwd() . DIRECTORY_SEPARATOR . $destination;
 
-            if ( $fileSystem->exists($destination) )
+            if ( !$fileSystem->exists($destination) )
             {
-	            $fileSystem->remove($destination);
-            }
+	            if ( is_dir( $source ) )
+	            {
+		            try
+		            {
+			            $fileSystem->mkdir($destination);
 
-            if ( is_dir( $source ) )
-            {
-                try
-                {
-                    $fileSystem->mkdir($destination);
+			            $directoryIterator = new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS);
+			            $iterator = new \RecursiveIteratorIterator($directoryIterator, \RecursiveIteratorIterator::SELF_FIRST);
 
-                    $directoryIterator = new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS);
-                    $iterator = new \RecursiveIteratorIterator($directoryIterator, \RecursiveIteratorIterator::SELF_FIRST);
+			            foreach ($iterator as $item)
+			            {
+				            if ($item->isDir())
+				            {
+					            $fileSystem->mkdir($destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+				            }
+				            else
+				            {
+					            $fileSystem->copy($item, $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+				            }
+			            }
+		            }
+		            catch ( IOException $e )
+		            {
+			            throw new \InvalidArgumentException( sprintf( '<error>Could not copy %s</error>', $source . " \n" . $e->getMessage() ) );
+		            }
+	            }
+	            else
+	            {
+		            try
+		            {
+			            $fileSystem->copy( $source, $destination );
 
-                    foreach ($iterator as $item)
-                    {
-	                    if ($item->isDir())
-	                    {
-		                    $fileSystem->mkdir($destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
-	                    }
-	                    else
-	                    {
-		                    $fileSystem->copy($item, $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
-	                    }
-                    }
-
-
-                } catch ( IOException $e )
-                {
-                    throw new \InvalidArgumentException( sprintf( '<error>Could not copy %s</error>', $source . " \n" . $e->getMessage() ) );
-                }
-            } else
-            {
-                try
-                {
-	                $fileSystem->copy( $source, $destination );
-
-                    $io->write( sprintf( '  - Copying <comment>%s</comment> to <comment>%s</comment>.', str_replace( getcwd(), '', $source ), str_replace( getcwd(), '', $destination ) ) );
-
-                } catch ( IOException $e )
-                {
-                    throw new \InvalidArgumentException( sprintf( '<error>Could not copy %s</error>', $source . " \n" . $e->getMessage() ) );
-                }
+			            $io->write( sprintf( '  - Copying <comment>%s</comment> to <comment>%s</comment>.', str_replace( getcwd(), '', $source ), str_replace( getcwd(), '', $destination ) ) );
+		            }
+		            catch ( IOException $e )
+		            {
+			            throw new \InvalidArgumentException( sprintf( '<error>Could not copy %s</error>', $source . " \n" . $e->getMessage() ) );
+		            }
+	            }
             }
         }
     }
