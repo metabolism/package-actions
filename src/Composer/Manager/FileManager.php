@@ -91,14 +91,14 @@ class FileManager
 		            try
 		            {
 			            $fileSystem->copy( $source, $destination );
-
-			            $io->write( sprintf( '  - Copying <comment>%s</comment> to <comment>%s</comment>.', str_replace( getcwd(), '', $source ), str_replace( getcwd(), '', $destination ) ) );
 		            }
 		            catch ( IOException $e )
 		            {
 			            throw new \InvalidArgumentException( sprintf( '<error>Could not copy %s</error>', $source . " \n" . $e->getMessage() ) );
 		            }
 	            }
+
+	            $io->write( sprintf( '  - Copying <comment>%s</comment> to <comment>%s</comment>.', str_replace( getcwd(), '', $source ), str_replace( getcwd(), '', $destination ) ) );
             }
         }
     }
