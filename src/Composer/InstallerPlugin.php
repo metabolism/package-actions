@@ -107,11 +107,7 @@ class InstallerPlugin implements PluginInterface, EventSubscriberInterface
 		    /** @var FileManager $fm */
 		    $fm = new FileManager( $this->io );
 
-		    // retro compat
-		    if( $type == "install" )
-			    $actions = isset( $extras["file-management"] ) ? $extras["file-management"] : $extras["post-package-install"];
-		    else
-			    $actions = $extras["post-package-".$type];
+		    $actions = $extras["post-package-".$type];
 
 		    foreach ( $actions as $action => $pkg_names )
 		    {
