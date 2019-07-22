@@ -215,38 +215,79 @@ class FileManager
         $fs         = new Filesystem();
         $packageDir = DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . $package->getName();
 
-        foreach ( $files as $target => $links )
+        foreach ( $files as $origin => $targets )
         {
-            if ( $fs->isAbsolutePath( $target ) )
+            if ( $fs->isAbsolutePath( $origin ) )
             {
-                throw new \InvalidArgumentException( "Invalid symlink target path '$target' for package '{$package->getName()}'." . ' It must be relative.' );
+                throw new \InvalidArgumentException( "Invalid symlink origin path '$origin' for package '{$package->getName()}'." . ' It must be relative.' );
             }
 
-            $links = (array)$links;
+            $targets = (array)$targets;
 
-            foreach ($links as $link)
+            foreach ($targets as $target)
             {
-                if ( $fs->isAbsolutePath( $link ) )
+                if ( $fs->isAbsolutePath( $target ) )
                 {
-                    throw new \InvalidArgumentException( "Invalid symlink link path '$link' for package '{$package->getName()}'." . ' It must be relative.' );
+                    throw new \InvalidArgumentException( "Invalid symlink target path '$target' for package '{$package->getName()}'." . ' It must be relative.' );
                 }
 
-                $targetPath = getcwd() . $packageDir . DIRECTORY_SEPARATOR . $target;
-                $linkPath   = getcwd() . DIRECTORY_SEPARATOR . $link;
+                $originPath = getcwd() . $packageDir . DIRECTORY_SEPARATOR . $origin;
+                $targetPath = getcwd() . DIRECTORY_SEPARATOR . $target;
 
-                if ( !$fs->exists( $targetPath ) )
+	            $relativeOriginPath = $this->getRelativePath($targetPath, $originPath);
+
+                if ( !$fs->exists( $originPath ) )
                 {
-                    throw new \RuntimeException( "The target path '$targetPath' for package'{$package->getName()}' does not exist." );
+                    throw new \RuntimeException( "The origin path '$originPath' for package'{$package->getName()}' does not exist." );
                 }
 
-                if ( $fs->exists( $linkPath ) )
-                    $fs->remove( $linkPath );
+                if ( $fs->exists( $targetPath ) )
+                    $fs->remove( $targetPath );
 
-                $io->write( sprintf( "  - Symlinking <comment>%s</comment> to <comment>%s</comment>", str_replace( getcwd(), '', $targetPath ), str_replace( getcwd(), '', $linkPath ) ) );
+                $io->write( sprintf( "  - Symlinking <comment>%s</comment> to <comment>%s</comment>", str_replace( getcwd(), '', $originPath ), str_replace( getcwd(), '', $targetPath ) ) );
 
-                $fs->symlink( $targetPath, $linkPath, true );
+                $fs->symlink( $relativeOriginPath, $targetPath, true );
             }
         }
     }
 
+
+	/**
+	 * @param string      $from
+	 * @param Package     $to
+	 */
+	function getRelativePath($from, $to)
+	{
+		// some compatibility fixes for Windows paths
+		$from = is_dir($from) ? rtrim($from, '\/') . '/' : $from;
+		$to   = is_dir($to)   ? rtrim($to, '\/') . '/'   : $to;
+		$from = str_replace('\\', '/', $from);
+		$to   = str_replace('\\', '/', $to);
+
+		$from     = explode('/', $from);
+		$to       = explode('/', $to);
+
+		$relPath  = $to;
+
+		foreach($from as $depth => $dir) {
+			// find first non-matching dir
+			if($dir === $to[$depth]) {
+				// ignore this directory
+				array_shift($relPath);
+			} else {
+				// get number of remaining dirs to $from
+				$remaining = count($from) - $depth;
+				if($remaining > 1) {
+					// add traversals up to first matching dir
+					$padLength = (count($relPath) + $remaining - 1) * -1;
+					$relPath = array_pad($relPath, $padLength, '..');
+					break;
+				} else {
+					$relPath[0] = './' . $relPath[0];
+				}
+			}
+		}
+		
+		return implode('/', $relPath);
+	}
 }
