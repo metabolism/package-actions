@@ -37,7 +37,6 @@ class InstallerPlugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ScriptEvents::PRE_INSTALL_CMD       => ['onPostInstallCmd'],
             PackageEvents::POST_PACKAGE_INSTALL => ['onPostPackageInstall'],
             PackageEvents::POST_PACKAGE_UPDATE  => ['onPostPackageUpdate']
         ];
