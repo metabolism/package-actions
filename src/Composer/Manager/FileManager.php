@@ -212,6 +212,10 @@ class FileManager
      */
     public function symlink($files, $package, $io)
     {
+    	// Copy on windows
+    	if( '\\' === \DIRECTORY_SEPARATOR )
+    		return $this->copy($files, $package, $io);
+
         $fs         = new Filesystem();
         $packageDir = DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . $package->getName();
 
