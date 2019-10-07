@@ -283,11 +283,11 @@ class FileManager
 					$relPath = array_pad($relPath, $padLength, '..');
 					break;
 				} else {
-					$relPath[0] = './' . $relPath[0];
+					$relPath[0] = '.'.DIRECTORY_SEPARATOR . $relPath[0];
 				}
 			}
 		}
 		
-		return implode('/', $relPath);
+		return implode(DIRECTORY_SEPARATOR, $relPath);
 	}
 }
