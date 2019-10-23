@@ -212,6 +212,10 @@ class FileManager
      */
     public function symlink($files, $package, $io)
     {
+    	// Copy on windows
+    	if( '\\' === \DIRECTORY_SEPARATOR )
+    		return $this->copy($files, $package, $io);
+
         $fs         = new Filesystem();
         $packageDir = DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . $package->getName();
 
@@ -283,11 +287,11 @@ class FileManager
 					$relPath = array_pad($relPath, $padLength, '..');
 					break;
 				} else {
-					$relPath[0] = './' . $relPath[0];
+					$relPath[0] = '.'.DIRECTORY_SEPARATOR . $relPath[0];
 				}
 			}
 		}
 		
-		return implode('/', $relPath);
+		return implode(DIRECTORY_SEPARATOR, $relPath);
 	}
 }
