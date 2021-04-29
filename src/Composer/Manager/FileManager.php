@@ -213,44 +213,48 @@ class FileManager
     public function symlink($files, $package, $io)
     {
     	// Copy on windows
-    	if( '\\' === \DIRECTORY_SEPARATOR )
-    		return $this->copy($files, $package, $io);
+    	if( '\\' === \DIRECTORY_SEPARATOR ){
 
-        $fs         = new Filesystem();
-        $packageDir = DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . $package->getName();
+            $this->copy($files, $package, $io);
+        }
+    	else{
 
-        foreach ( $files as $origin => $targets )
-        {
-            if ( $fs->isAbsolutePath( $origin ) )
+            $fs         = new Filesystem();
+            $packageDir = DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . $package->getName();
+
+            foreach ( $files as $origin => $targets )
             {
-                throw new \InvalidArgumentException( "Invalid symlink origin path '$origin' for package '{$package->getName()}'." . ' It must be relative.' );
-            }
-
-            $targets = (array)$targets;
-
-            foreach ($targets as $target)
-            {
-                if ( $fs->isAbsolutePath( $target ) )
+                if ( $fs->isAbsolutePath( $origin ) )
                 {
-                    throw new \InvalidArgumentException( "Invalid symlink target path '$target' for package '{$package->getName()}'." . ' It must be relative.' );
+                    throw new \InvalidArgumentException( "Invalid symlink origin path '$origin' for package '{$package->getName()}'." . ' It must be relative.' );
                 }
 
-                $originPath = getcwd() . $packageDir . DIRECTORY_SEPARATOR . $origin;
-                $targetPath = getcwd() . DIRECTORY_SEPARATOR . $target;
+                $targets = (array)$targets;
 
-	            $relativeOriginPath = $this->getRelativePath($targetPath, $originPath);
-
-                if ( !$fs->exists( $originPath ) )
+                foreach ($targets as $target)
                 {
-                    throw new \RuntimeException( "The origin path '$originPath' for package'{$package->getName()}' does not exist." );
+                    if ( $fs->isAbsolutePath( $target ) )
+                    {
+                        throw new \InvalidArgumentException( "Invalid symlink target path '$target' for package '{$package->getName()}'." . ' It must be relative.' );
+                    }
+
+                    $originPath = getcwd() . $packageDir . DIRECTORY_SEPARATOR . $origin;
+                    $targetPath = getcwd() . DIRECTORY_SEPARATOR . $target;
+
+                    $relativeOriginPath = $this->getRelativePath($targetPath, $originPath);
+
+                    if ( !$fs->exists( $originPath ) )
+                    {
+                        throw new \RuntimeException( "The origin path '$originPath' for package'{$package->getName()}' does not exist." );
+                    }
+
+                    if ( $fs->exists( $targetPath ) )
+                        $fs->remove( $targetPath );
+
+                    $io->write( sprintf( "  - Symlinking <comment>%s</comment> to <comment>%s</comment>", str_replace( getcwd(), '', $originPath ), str_replace( getcwd(), '', $targetPath ) ) );
+
+                    $fs->symlink( $relativeOriginPath, $targetPath, true );
                 }
-
-                if ( $fs->exists( $targetPath ) )
-                    $fs->remove( $targetPath );
-
-                $io->write( sprintf( "  - Symlinking <comment>%s</comment> to <comment>%s</comment>", str_replace( getcwd(), '', $originPath ), str_replace( getcwd(), '', $targetPath ) ) );
-
-                $fs->symlink( $relativeOriginPath, $targetPath, true );
             }
         }
     }
@@ -258,7 +262,7 @@ class FileManager
 
 	/**
 	 * @param string      $from
-	 * @param Package     $to
+	 * @param string     $to
 	 */
 	function getRelativePath($from, $to)
 	{
