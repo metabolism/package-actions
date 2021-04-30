@@ -1,6 +1,6 @@
 {
   "name": "metabolism/package-actions",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Allow file and folder actions upon package installation or update",
   "type": "composer-plugin",
   "license": "AGPL-3.0",
