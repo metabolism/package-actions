@@ -105,6 +105,43 @@ class FileManager
 
 
     /**
+     * File Rename
+     *
+     * @param $files
+     * @param Package $package
+     * @param $io
+     * @internal param Event $event
+     */
+    public function rename($files, $package, $io)
+    {
+	    $fileSystem = new FileSystem();
+
+        foreach ( $files as $source => $destination )
+        {
+            if ( $fileSystem->isAbsolutePath( $source ) )
+            {
+                throw new \InvalidArgumentException( "Invalid target path '$source' for package'{$package->getName()}'." . ' It must be relative.' );
+            }
+
+            if ( $fileSystem->isAbsolutePath( $destination ) )
+            {
+                throw new \InvalidArgumentException( "Invalid link path '$destination' for package'{$package->getName()}'." . ' It must be relative.' );
+            }
+
+            $source = getcwd() . DIRECTORY_SEPARATOR . $source;
+            $destination   = getcwd() . DIRECTORY_SEPARATOR . $destination;
+
+            if ( $fileSystem->exists($source) && !$fileSystem->exists($destination) )
+            {
+                $fileSystem->rename($source, $destination);
+
+	            $io->write( sprintf( '  - Renamming <comment>%s</comment> to <comment>%s</comment>.', str_replace( getcwd(), '', $source ), str_replace( getcwd(), '', $destination ) ) );
+            }
+        }
+    }
+
+
+    /**
      * @param Event $event
      * @param       $id
      * @return array

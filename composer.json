@@ -1,6 +1,6 @@
 {
   "name": "metabolism/package-actions",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Allow file and folder actions upon package installation or update",
   "type": "composer-plugin",
   "license": "AGPL-3.0",
@@ -16,7 +16,7 @@
     "symfony/filesystem": "^3.0|^4.0|^5.0"
   },
   "require-dev": {
-    "composer/composer": "^1.0|^2.0.13"
+    "composer/composer": "^1.0|^2.1.9"
   },
   "autoload": {
     "psr-4": {
