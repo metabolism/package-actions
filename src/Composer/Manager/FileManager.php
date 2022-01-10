@@ -58,7 +58,7 @@ class FileManager
             $source = $packageDir . DIRECTORY_SEPARATOR . $source;
             $destination   = getcwd() . DIRECTORY_SEPARATOR . $destination;
 
-            if ( !$fileSystem->exists($destination) )
+            if ( $fileSystem->exists($source) )
             {
 	            if ( is_dir( $source ) )
 	            {
@@ -73,11 +73,12 @@ class FileManager
 			            {
 				            if ($item->isDir())
 				            {
-					            $fileSystem->mkdir($destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+                                if( !$fileSystem->exists($destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName()) )
+                                    $fileSystem->mkdir($destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
 				            }
 				            else
 				            {
-					            $fileSystem->copy($item, $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+					            $fileSystem->copy($item, $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName(), true);
 				            }
 			            }
 		            }
@@ -90,7 +91,7 @@ class FileManager
 	            {
 		            try
 		            {
-			            $fileSystem->copy( $source, $destination );
+			            $fileSystem->copy( $source, $destination, true );
 		            }
 		            catch ( IOException $e )
 		            {
@@ -135,7 +136,7 @@ class FileManager
             {
                 $fileSystem->rename($source, $destination);
 
-	            $io->write( sprintf( '  - Renamming <comment>%s</comment> to <comment>%s</comment>.', str_replace( getcwd(), '', $source ), str_replace( getcwd(), '', $destination ) ) );
+	            $io->write( sprintf( '  - Renaming <comment>%s</comment> to <comment>%s</comment>.', str_replace( getcwd(), '', $source ), str_replace( getcwd(), '', $destination ) ) );
             }
         }
     }
@@ -187,16 +188,10 @@ class FileManager
                 if ( $fs->exists( $file ) )
                 {
                     $fs->remove( $file );
-                    $io->write( sprintf( '  - Removing directory <comment>%s</comment>.', str_replace( getcwd(), '', $file ) ) );
+                    $io->write( sprintf( '  - Removing <comment>%s</comment>.', str_replace( getcwd(), '', $file ) ) );
                 }
-                elseif ( $fs->exists( $file ) )
-                {
-                    $fs->remove( $file );
-                    $io->write( sprintf( '  - Removing file <comment>%s</comment>.', str_replace( getcwd(), '', $file ) ) );
-                }
-
-
-            } catch ( IOException $e )
+            }
+            catch ( IOException $e )
             {
                 throw new \InvalidArgumentException( sprintf( '<error>Could not remove %s</error>', $file ) );
             }

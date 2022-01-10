@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.3
+- allow overwrite on copy
+
 ## 1.2.2
 - added rename action
 
