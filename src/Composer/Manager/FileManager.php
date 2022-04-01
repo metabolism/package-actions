@@ -78,7 +78,7 @@ class FileManager
 				            }
 				            else
 				            {
-					            $fileSystem->copy($item, $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName(), true);
+					            $fileSystem->copy($item, $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
 				            }
 			            }
 		            }
@@ -91,7 +91,7 @@ class FileManager
 	            {
 		            try
 		            {
-			            $fileSystem->copy( $source, $destination, true );
+			            $fileSystem->copy( $source, $destination);
 		            }
 		            catch ( IOException $e )
 		            {
@@ -327,7 +327,7 @@ class FileManager
 				}
 			}
 		}
-		
+
 		return implode(DIRECTORY_SEPARATOR, $relPath);
 	}
 }
