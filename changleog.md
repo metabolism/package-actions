@@ -1,7 +1,10 @@
 # Changelog
 
+## 1.2.6
+- allow Symfony 6 & 7
+
 ## 1.2.3
-- allow overwrite on copy
+- allow overwriting on copy
 
 ## 1.2.2
 - added rename action
